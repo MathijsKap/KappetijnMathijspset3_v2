@@ -116,7 +116,7 @@ public class Main4Activity extends AppCompatActivity {
             public void onClick(View v) {
 
                 Context context = getApplicationContext();
-                int duration = Toast.LENGTH_SHORT;
+                int duration = Toast.LENGTH_LONG;
                 CharSequence text2 = "Your order has been placed!";
                 orderToast = Toast.makeText(context, text2, duration);
                 orderToast.show();
