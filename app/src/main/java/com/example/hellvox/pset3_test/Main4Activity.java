@@ -30,10 +30,10 @@ import java.util.List;
 public class Main4Activity extends AppCompatActivity {
 
     JSONObject arra;
-    ArrayList<Integer> allDishesIDS = new ArrayList<Integer>();
-    ArrayList<Integer> allDishesPrice = new ArrayList<Integer>();
-    ArrayList<String> allDishes = new ArrayList<String>();
-    ArrayList<String> orderArray = new ArrayList<String>();
+    ArrayList<Integer> allDishesIDS = new ArrayList<>();
+    ArrayList<Integer> allDishesPrice = new ArrayList<>();
+    ArrayList<String> allDishes = new ArrayList<>();
+    ArrayList<String> orderArray = new ArrayList<>();
     ArrayList<Food> foodList = new ArrayList<>();
     FoodListAdapater adapter;
     Toast errorToast;
@@ -58,7 +58,7 @@ public class Main4Activity extends AppCompatActivity {
         errorToast = Toast.makeText(context, text, duration);
         CharSequence text3 = "Item removed!";
         removeToast = Toast.makeText(context, text3, duration);
-        ListView list = (ListView) findViewById(R.id.orders);
+        ListView list = findViewById(R.id.orders);
         adapter = new FoodListAdapater(this, R.layout.adapter_view_layout, foodList);
         list.setAdapter(adapter);
         final SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
@@ -76,7 +76,7 @@ public class Main4Activity extends AppCompatActivity {
                             allDishes.add(arra.optString("name"));
                         }
                         loadFromSharedPrefs();
-                        TextView total = (TextView) findViewById(R.id.total);
+                        TextView total = findViewById(R.id.total);
                         total.setText("Total costs: € " + totalCosts);
 
                     }
@@ -100,11 +100,12 @@ public class Main4Activity extends AppCompatActivity {
                 int price = chosen_entry.getPrice();
                 SharedPreferences.Editor editor = prefs.edit();
                 editor.putString(name, null);
-                editor.commit();
+                editor.apply();
                 foodList.remove(chosen_entry);
                 totalCosts -= price;
                 TextView total = (TextView) findViewById(R.id.total);
                 total.setText("Total costs: € " + totalCosts);
+                saveToSharedPrefs();
                 adapter.notifyDataSetChanged();
                 removeToast.show();
                 return true;
@@ -113,7 +114,7 @@ public class Main4Activity extends AppCompatActivity {
         final Button button = findViewById(R.id.buttonOrder);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                
+
                 Context context = getApplicationContext();
                 int duration = Toast.LENGTH_SHORT;
                 CharSequence text2 = "Your order has been placed!";
