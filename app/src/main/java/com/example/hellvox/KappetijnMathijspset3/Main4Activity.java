@@ -36,6 +36,8 @@ public class Main4Activity extends AppCompatActivity {
     FoodListAdapater adapter;
     Toast errorToast;
     int totalCosts = 0;
+    int time;
+
 
 
     @Override
@@ -52,14 +54,18 @@ public class Main4Activity extends AppCompatActivity {
         total = findViewById(R.id.total);
         last = findViewById(R.id.orderVieww);
         button = findViewById(R.id.buttonOrder);
+
         Context context = getApplicationContext();
         CharSequence text = "Something went wrong, try restarting the app";
         int duration = Toast.LENGTH_SHORT;
         errorToast = Toast.makeText(context, text, duration);
+
         ListView list = findViewById(R.id.orders);
         adapter = new FoodListAdapater(this, R.layout.adapter_view_layout, foodList);
         list.setAdapter(adapter);
+
         final SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+
         String url = "https://resto.mprog.nl/menu";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
                 (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
@@ -113,6 +119,8 @@ public class Main4Activity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 SharedPreferences.Editor editor = prefs.edit();
+                time = time();
+                time = 5;
                 for(int i=0; i<allDishes.size(); i++) {
                     String temp = allDishes.get(i);
                     editor.putString(temp, null);
@@ -121,7 +129,7 @@ public class Main4Activity extends AppCompatActivity {
                 total.setVisibility(View.INVISIBLE);
                 Toast.makeText(getApplicationContext(),"Your order has been placed!", Toast.LENGTH_LONG).show();
                 last.setVisibility(View.VISIBLE);
-                last.setText("Your order is coming in: " +"" + " Minutes!");
+                last.setText("Your order is coming in: " + time + " Minutes!");
                 foodList.clear();
                 saveToSharedPrefs();
                 adapter.notifyDataSetChanged();
@@ -130,6 +138,28 @@ public class Main4Activity extends AppCompatActivity {
 
             }
         });
+    }
+    
+    public int time() {
+        String url = "https://resto.mprog.nl/order";
+        JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        errorToast.show();
+                    }
+                });
+
+        // Access the RequestQueue through your singleton class.
+        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+        return time;
     }
 
     public void saveToSharedPrefs() {
