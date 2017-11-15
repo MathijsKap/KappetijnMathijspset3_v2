@@ -1,4 +1,4 @@
-package com.example.hellvox.pset3_test;
+package com.example.hellvox.KappetijnMathijspset3;
 
 import android.content.Context;
 import android.graphics.Bitmap;

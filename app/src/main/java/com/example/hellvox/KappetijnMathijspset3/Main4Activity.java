@@ -1,15 +1,12 @@
-package com.example.hellvox.pset3_test;
+package com.example.hellvox.KappetijnMathijspset3;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,12 +21,13 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 
 public class Main4Activity extends AppCompatActivity {
 
     JSONObject arra;
+    Button button;
+    TextView total;
+    TextView last;
     ArrayList<Integer> allDishesIDS = new ArrayList<>();
     ArrayList<Integer> allDishesPrice = new ArrayList<>();
     ArrayList<String> allDishes = new ArrayList<>();
@@ -37,8 +35,6 @@ public class Main4Activity extends AppCompatActivity {
     ArrayList<Food> foodList = new ArrayList<>();
     FoodListAdapater adapter;
     Toast errorToast;
-    Toast orderToast;
-    Toast removeToast;
     int totalCosts = 0;
 
 
@@ -52,12 +48,14 @@ public class Main4Activity extends AppCompatActivity {
         }
         setTitle("Your Order");
         loadFromSharedPrefs();
+
+        total = findViewById(R.id.total);
+        last = findViewById(R.id.orderVieww);
+        button = findViewById(R.id.buttonOrder);
         Context context = getApplicationContext();
         CharSequence text = "Something went wrong, try restarting the app";
         int duration = Toast.LENGTH_SHORT;
         errorToast = Toast.makeText(context, text, duration);
-        CharSequence text3 = "Item removed!";
-        removeToast = Toast.makeText(context, text3, duration);
         ListView list = findViewById(R.id.orders);
         adapter = new FoodListAdapater(this, R.layout.adapter_view_layout, foodList);
         list.setAdapter(adapter);
@@ -107,22 +105,28 @@ public class Main4Activity extends AppCompatActivity {
                 total.setText("Total costs: € " + totalCosts);
                 saveToSharedPrefs();
                 adapter.notifyDataSetChanged();
-                removeToast.show();
+                Toast.makeText(getApplicationContext(),name + " removed!", Toast.LENGTH_SHORT).show();
                 return true;
             }
         });
-        final Button button = findViewById(R.id.buttonOrder);
+
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-
-                Context context = getApplicationContext();
-                int duration = Toast.LENGTH_LONG;
-                CharSequence text2 = "Your order has been placed!";
-                orderToast = Toast.makeText(context, text2, duration);
-                orderToast.show();
-
+                SharedPreferences.Editor editor = prefs.edit();
+                for(int i=0; i<allDishes.size(); i++) {
+                    String temp = allDishes.get(i);
+                    editor.putString(temp, null);
+                }
+                editor.apply();
+                total.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(),"Your order has been placed!", Toast.LENGTH_LONG).show();
+                last.setVisibility(View.VISIBLE);
+                last.setText("Your order is coming in: " +"" + " Minutes!");
                 foodList.clear();
+                saveToSharedPrefs();
                 adapter.notifyDataSetChanged();
+                button.setVisibility(View.INVISIBLE);
+
 
             }
         });
@@ -156,5 +160,23 @@ public class Main4Activity extends AppCompatActivity {
         if (item.getItemId()==android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
+    }
+
+    // Code to restore the element visibility for rotation.
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        button.setVisibility(savedInstanceState.getInt("Button"));
+        total.setVisibility(savedInstanceState.getInt("Total"));
+        last.setVisibility(savedInstanceState.getInt("Last"));
+        last.setText(savedInstanceState.getString("lastt"));
+        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    // Code to save the element visibility for rotation.
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putInt("Button", button.getVisibility());
+        savedInstanceState.putInt("Total", total.getVisibility());
+        savedInstanceState.putInt("Last", last.getVisibility());
+        savedInstanceState.putString("lastt", last.getText().toString());
+        super.onSaveInstanceState(savedInstanceState);
     }
 }

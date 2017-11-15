@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.hellvox.pset3_test.Main3Activity"
+    tools:context="com.example.hellvox.KappetijnMathijspset3.Main3Activity"
     tools:layout_editor_absoluteY="73dp">
 
     <ImageView

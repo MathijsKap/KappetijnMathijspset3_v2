@@ -1,4 +1,4 @@
-package com.example.hellvox.pset3_test;
+package com.example.hellvox.KappetijnMathijspset3;
 
 /**
  * Created by HellVox on 15-11-2017.
