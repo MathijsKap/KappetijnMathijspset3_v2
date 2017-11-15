@@ -6,9 +6,11 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -37,6 +39,8 @@ public class Main3Activity extends AppCompatActivity {
     Toast toast;
     Toast toast_added;
     Toast toast_already;
+    TextView textCartItemCount;
+    int mCartItemCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,11 +112,6 @@ public class Main3Activity extends AppCompatActivity {
 
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId()==android.R.id.home)
-            finish();
-        return super.onOptionsItemSelected(item);
-    }
     public void saveToSharedPrefs(View view) {
             SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
@@ -152,6 +151,57 @@ public class Main3Activity extends AppCompatActivity {
         protected void onPostExecute(Bitmap result) {
             bmImage.setImageBitmap(result);
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId()==android.R.id.home)
+            finish();
+        switch (item.getItemId()) {
+            case R.id.buttonCart: {
+                Intent intent = new Intent(getApplicationContext(), Main4Activity.class);
+                startActivity(intent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        final MenuItem menuItem = menu.findItem(R.id.buttonCart);
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+        setupBadge();
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
+        return true;
+    }
+
+    private void setupBadge() {
+        mCartItemCount = loadFromSharedPrefs2();
+        if (textCartItemCount != null) {
+            if (mCartItemCount == 0) {
+                if (textCartItemCount.getVisibility() != View.GONE) {
+                    textCartItemCount.setVisibility(View.GONE);
+                }
+            } else {
+                textCartItemCount.setText(String.valueOf(Math.min(mCartItemCount, 99)));
+                if (textCartItemCount.getVisibility() != View.VISIBLE) {
+                    textCartItemCount.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+
+    public int loadFromSharedPrefs2() {
+        SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+        return prefs.getInt("total",  0);
     }
 
 }

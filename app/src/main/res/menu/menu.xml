@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/buttonCart"
+        android:title=""
+        app:showAsAction="always"
+        app:actionLayout="@layout/custom_action_item_layout"
+        android:icon="@drawable/ic_shopping_basket_black_48dp"
+        />
+
+</menu>

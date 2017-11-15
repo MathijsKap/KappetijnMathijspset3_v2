@@ -2,14 +2,19 @@ package com.example.hellvox.pset3_test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -27,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     ArrayList<String> menuArray = new ArrayList<String>();
     ArrayAdapter<String> name;
+    TextView textCartItemCount;
+    int mCartItemCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,17 +81,56 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        final Button button = findViewById(R.id.buttonCart);
-        button.setOnClickListener(new View.OnClickListener() {
+        
+    }
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        final MenuItem menuItem = menu.findItem(R.id.buttonCart);
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+        setupBadge();
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(), Main4Activity.class);
-                startActivity(intent);
+                onOptionsItemSelected(menuItem);
             }
         });
-
+        return true;
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.buttonCart: {
+                Intent intent = new Intent(getApplicationContext(), Main4Activity.class);
+                startActivity(intent);
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupBadge() {
+        mCartItemCount = loadFromSharedPrefs();
+        if (textCartItemCount != null) {
+            if (mCartItemCount == 0) {
+                if (textCartItemCount.getVisibility() != View.GONE) {
+                    textCartItemCount.setVisibility(View.GONE);
+                }
+            } else {
+                textCartItemCount.setText(String.valueOf(Math.min(mCartItemCount, 99)));
+                if (textCartItemCount.getVisibility() != View.VISIBLE) {
+                    textCartItemCount.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+    }
+
+    public int loadFromSharedPrefs() {
+        SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+        return prefs.getInt("total",  0);
+    }
 }
 
 

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">pset3_test</string>
+    <string name="app_name">KappetijnMathijspset3_v2</string>
     <string name="title_home">Menu</string>
     <string name="title_notifications">Your Order</string>
     <string name="title">Menu</string>
@@ -10,4 +10,6 @@
     <string name="notification_button">Notification</string>
     <string name="share_button">Share</string>
     <string name="food_image">Food Image</string>
+    <string name="buttonOrder">Submit</string>
+    <string name="imageHome">Home Image</string>
 </resources>
