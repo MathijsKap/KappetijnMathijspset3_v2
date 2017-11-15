@@ -36,7 +36,6 @@ public class Main4Activity extends AppCompatActivity {
     FoodListAdapater adapter;
     Toast errorToast;
     int totalCosts = 0;
-    int time;
 
 
 
@@ -107,7 +106,7 @@ public class Main4Activity extends AppCompatActivity {
                 editor.apply();
                 foodList.remove(chosen_entry);
                 totalCosts -= price;
-                TextView total = (TextView) findViewById(R.id.total);
+                TextView total = findViewById(R.id.total);
                 total.setText("Total costs: € " + totalCosts);
                 saveToSharedPrefs();
                 adapter.notifyDataSetChanged();
@@ -118,49 +117,40 @@ public class Main4Activity extends AppCompatActivity {
 
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                SharedPreferences.Editor editor = prefs.edit();
-                time = time();
-                time = 5;
-                for(int i=0; i<allDishes.size(); i++) {
-                    String temp = allDishes.get(i);
-                    editor.putString(temp, null);
-                }
-                editor.apply();
-                total.setVisibility(View.INVISIBLE);
-                Toast.makeText(getApplicationContext(),"Your order has been placed!", Toast.LENGTH_LONG).show();
-                last.setVisibility(View.VISIBLE);
-                last.setText("Your order is coming in: " + time + " Minutes!");
-                foodList.clear();
-                saveToSharedPrefs();
-                adapter.notifyDataSetChanged();
-                button.setVisibility(View.INVISIBLE);
-
-
+                if (foodList.size() > 0) {
+                    SharedPreferences.Editor editor = prefs.edit();
+                    String url = "https://resto.mprog.nl/order";
+                    JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            int time = response.optInt("preparation_time");
+                            last.setVisibility(View.VISIBLE);
+                            last.setText("Your order is coming in: " + time + " Minutes!");
+                        }
+                    }, new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            errorToast.show();
+                        }
+                    });
+                    // Access the RequestQueue through your singleton class.
+                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsObjRequest);
+                    for (int i = 0; i < allDishes.size(); i++) {
+                        String temp = allDishes.get(i);
+                        editor.putString(temp, null);
+                    }
+                    editor.apply();
+                    total.setVisibility(View.INVISIBLE);
+                    Toast.makeText(getApplicationContext(), "Your order has been placed!", Toast.LENGTH_LONG).show();
+                    foodList.clear();
+                    saveToSharedPrefs();
+                    adapter.notifyDataSetChanged();
+                    button.setVisibility(View.INVISIBLE);
+                } else {Toast.makeText(getApplicationContext(), "You have an empty cart!", Toast.LENGTH_SHORT).show();}
             }
         });
     }
-    
-    public int time() {
-        String url = "https://resto.mprog.nl/order";
-        JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                (Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
 
-                    @Override
-                    public void onResponse(JSONObject response) {
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        errorToast.show();
-                    }
-                });
-
-        // Access the RequestQueue through your singleton class.
-        MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
-        return time;
-    }
 
     public void saveToSharedPrefs() {
         SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
