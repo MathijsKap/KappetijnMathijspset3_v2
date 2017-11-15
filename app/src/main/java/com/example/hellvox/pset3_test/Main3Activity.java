@@ -203,5 +203,10 @@ public class Main3Activity extends AppCompatActivity {
         SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
         return prefs.getInt("total",  0);
     }
+    public void onResume() {
+        // After a pause OR at startup
+        super.onResume();
+        setupBadge();
+    }
 
 }
