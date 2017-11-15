@@ -35,6 +35,8 @@ public class Main3Activity extends AppCompatActivity {
     String dish_url_image;
     String dish_name;
     Toast toast;
+    Toast toast_added;
+    Toast toast_already;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,6 +53,10 @@ public class Main3Activity extends AppCompatActivity {
         CharSequence text = "Something went wrong, try restarting the app";
         int duration = Toast.LENGTH_SHORT;
         toast = Toast.makeText(context, text, duration);
+        CharSequence text_rdy = "Item added to your order!";
+        toast_added = Toast.makeText(context, text_rdy, duration);
+        CharSequence text_alr = "Item already in your order!";
+        toast_already = Toast.makeText(context, text_alr, duration);
 
         String url = "https://resto.mprog.nl/menu";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -93,7 +99,9 @@ public class Main3Activity extends AppCompatActivity {
         final Button button = findViewById(R.id.buttonAdd);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                saveToSharedPrefs(v);
+                if (loadFromSharedPrefs()) {
+                    toast_already.show();
+                } else saveToSharedPrefs(v);
             }
         });
 
@@ -109,10 +117,16 @@ public class Main3Activity extends AppCompatActivity {
             SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
 
-            editor.putString("dishname", dish_name);
+            editor.putString(dish_name, dish_name);
             editor.commit();
-            toast.show();
+            toast_added.show();
 
+    }
+    public boolean loadFromSharedPrefs() {
+        SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+        String s = prefs.getString(dish_name,  null);
+        if(s != null) return true;
+        return false;
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
@@ -139,4 +153,5 @@ public class Main3Activity extends AppCompatActivity {
             bmImage.setImageBitmap(result);
         }
     }
+
 }

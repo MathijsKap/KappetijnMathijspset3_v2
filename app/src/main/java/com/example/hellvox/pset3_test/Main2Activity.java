@@ -95,7 +95,7 @@ public class Main2Activity extends AppCompatActivity {
     public void loadFromSharedPrefs() {
 
         SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
-        String s = prefs.getString("dishname",  null);
+        String s = prefs.getString("Margherita Pizza",  null);
         if(s !=null) {
             TextView textView = findViewById(R.id.textView2);
             textView.setText(s);
