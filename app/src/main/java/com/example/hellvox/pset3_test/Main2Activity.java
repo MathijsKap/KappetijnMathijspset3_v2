@@ -2,6 +2,7 @@ package com.example.hellvox.pset3_test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -39,6 +40,7 @@ public class Main2Activity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
             getSupportActionBar().setDisplayShowHomeEnabled(true);
         }
+        loadFromSharedPrefs();
         name = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, dishesArray);
         String url = "https://resto.mprog.nl/menu";
 
@@ -59,11 +61,6 @@ public class Main2Activity extends AppCompatActivity {
                                         dishesArray.add(arra.optString("name"));
                                 }
                         }
-                        /*for(int i=0; i<array.length(); i++) {
-                            dishesArray.add(array.optString(i));
-                        }
-                        TextView textView = findViewById(R.id.textView2);
-                        textView.setText("" + array.length());*/
                         name.notifyDataSetChanged();
 
                     }
@@ -90,7 +87,19 @@ public class Main2Activity extends AppCompatActivity {
             }
         });
 
+    }
+    public void saveToSharedPrefs(View view) {
 
+    }
+
+    public void loadFromSharedPrefs() {
+
+        SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+        String s = prefs.getString("dishname",  null);
+        if(s !=null) {
+            TextView textView = findViewById(R.id.textView2);
+            textView.setText(s);
+        }
     }
 
     @Override

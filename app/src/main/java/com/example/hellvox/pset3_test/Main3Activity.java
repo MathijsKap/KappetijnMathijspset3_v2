@@ -2,14 +2,16 @@ package com.example.hellvox.pset3_test;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,13 +33,15 @@ public class Main3Activity extends AppCompatActivity {
     int dish_price;
     String dish_discrip;
     String dish_url_image;
+    String dish_name;
+    Toast toast;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
         Intent intent = getIntent();
-        final String dish_name = intent.getStringExtra("dish");
+        dish_name = intent.getStringExtra("dish");
         setTitle(dish_name);
         if(getSupportActionBar()!=null) {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -46,7 +50,7 @@ public class Main3Activity extends AppCompatActivity {
         Context context = getApplicationContext();
         CharSequence text = "Something went wrong, try restarting the app";
         int duration = Toast.LENGTH_SHORT;
-        final Toast toast = Toast.makeText(context, text, duration);
+        toast = Toast.makeText(context, text, duration);
 
         String url = "https://resto.mprog.nl/menu";
         JsonObjectRequest jsObjRequest = new JsonObjectRequest
@@ -74,11 +78,6 @@ public class Main3Activity extends AppCompatActivity {
                             }
 
                         }
-                        /*for(int i=0; i<array.length(); i++) {
-                            dishesArray.add(array.optString(i));
-                        }
-                        TextView textView = findViewById(R.id.textView2);
-                        textView.setText("" + array.length());*/
 
                     }
                 }, new Response.ErrorListener() {
@@ -91,6 +90,13 @@ public class Main3Activity extends AppCompatActivity {
 
         // Access the RequestQueue through your singleton class.
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+        final Button button = findViewById(R.id.buttonAdd);
+        button.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                saveToSharedPrefs(v);
+            }
+        });
+
 
     }
 
@@ -98,6 +104,15 @@ public class Main3Activity extends AppCompatActivity {
         if (item.getItemId()==android.R.id.home)
             finish();
         return super.onOptionsItemSelected(item);
+    }
+    public void saveToSharedPrefs(View view) {
+            SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+
+            editor.putString("dishname", dish_name);
+            editor.commit();
+            toast.show();
+
     }
 
     private class DownloadImageTask extends AsyncTask<String, Void, Bitmap> {
