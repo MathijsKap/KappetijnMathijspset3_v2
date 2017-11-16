@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
         setTitle("Restaurent");
 
         name = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, menuArray);
