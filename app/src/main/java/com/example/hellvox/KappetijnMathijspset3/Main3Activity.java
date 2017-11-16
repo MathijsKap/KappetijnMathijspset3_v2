@@ -82,7 +82,6 @@ public class Main3Activity extends AppCompatActivity {
                                 textname.setText(dish_name);
                                 textprice.setText("€ "+ dish_price);
                                 textdisc.setText(dish_discrip);
-                                dish_url_image = dish_url_image.replace("http", "https");
                                 new DownloadImageTask((ImageView) findViewById(R.id.imageFood))
                                         .execute(dish_url_image);
                             }
@@ -105,7 +104,11 @@ public class Main3Activity extends AppCompatActivity {
             public void onClick(View v) {
                 if (loadFromSharedPrefs()) {
                     toast_already.show();
-                } else saveToSharedPrefs(v);
+                } else {
+                    mCartItemCount += 1;
+                    saveToSharedPrefs(v);
+                    setupBadge();
+                }
             }
         });
 
@@ -115,7 +118,7 @@ public class Main3Activity extends AppCompatActivity {
     public void saveToSharedPrefs(View view) {
             SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
-
+            editor.putInt("total", mCartItemCount);
             editor.putString(dish_name, dish_name);
             editor.commit();
             toast_added.show();
@@ -201,6 +204,7 @@ public class Main3Activity extends AppCompatActivity {
 
     public int loadFromSharedPrefs2() {
         SharedPreferences prefs = this.getSharedPreferences("orders", MODE_PRIVATE);
+        mCartItemCount = prefs.getInt("total", 0);
         return prefs.getInt("total",  0);
     }
     public void onResume() {
