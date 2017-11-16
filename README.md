@@ -1,5 +1,5 @@
 # KappetijnMathijspset3_v2
-Simple app to order some dishes with a menu from a API.
+Simple app to order some dishes with a menu from an API.
 
 
 <img src="https://raw.githubusercontent.com/hellvox/KappetijnMathijspset3_v2/master/doc/Screenshot_1510829017.png" width="50%">
