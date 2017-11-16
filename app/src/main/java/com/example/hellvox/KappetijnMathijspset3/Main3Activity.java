@@ -99,20 +99,22 @@ public class Main3Activity extends AppCompatActivity {
 
         // Access the RequestQueue through your singleton class.
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
+
         final Button button = findViewById(R.id.buttonAdd);
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (loadFromSharedPrefs()) {
-                    toast_already.show();
-                } else {
-                    mCartItemCount += 1;
-                    saveToSharedPrefs(v);
-                    setupBadge();
-                }
+        button.setOnClickListener(new GoButtonClickListener());
+    }
+
+    private class GoButtonClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (loadFromSharedPrefs()) {
+                toast_already.show();
+            } else {
+                mCartItemCount += 1;
+                saveToSharedPrefs(v);
+                setupBadge();
             }
-        });
-
-
+        }
     }
 
     public void saveToSharedPrefs(View view) {

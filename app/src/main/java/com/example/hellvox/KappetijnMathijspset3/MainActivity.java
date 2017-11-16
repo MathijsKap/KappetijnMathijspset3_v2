@@ -71,18 +71,21 @@ public class MainActivity extends AppCompatActivity {
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         ListView list = (ListView) findViewById(R.id.menus);
         list.setAdapter(name);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                String chosen_entry= (String) parent.getAdapter().getItem(position);
-                Intent intent = new Intent(getApplicationContext(), Main2Activity.class);
-                intent.putExtra("menu_item", chosen_entry);
-                startActivity(intent);
-            }
-        });
+        list.setOnItemClickListener(new GoButtonClickListener());
         
     }
+
+    private class GoButtonClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+            String chosen_entry= (String) parent.getAdapter().getItem(position);
+            Intent intent = new Intent(getApplicationContext(), Main2Activity.class);
+            intent.putExtra("menu_item", chosen_entry);
+            startActivity(intent);
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu, menu);

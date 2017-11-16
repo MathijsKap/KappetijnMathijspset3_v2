@@ -79,17 +79,19 @@ public class Main2Activity extends AppCompatActivity {
         MySingleton.getInstance(this).addToRequestQueue(jsObjRequest);
         ListView list = (ListView) findViewById(R.id.dishes);
         list.setAdapter(name);
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position,
-                                    long id) {
-                String chosen_entry= (String) parent.getAdapter().getItem(position);
-                Intent intent = new Intent(getApplicationContext(), Main3Activity.class);
-                intent.putExtra("dish", chosen_entry);
-                startActivity(intent);
-            }
-        });
+        list.setOnItemClickListener(new GoButtonClickListener());
+    }
 
+    private class GoButtonClickListener implements AdapterView.OnItemClickListener {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position,
+                                long id) {
+            String chosen_entry= (String) parent.getAdapter().getItem(position);
+            Intent intent = new Intent(getApplicationContext(), Main3Activity.class);
+            intent.putExtra("dish", chosen_entry);
+            startActivity(intent);
+
+        }
     }
 
     @Override

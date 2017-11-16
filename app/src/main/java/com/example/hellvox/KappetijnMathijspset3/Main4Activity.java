@@ -1,6 +1,7 @@
 package com.example.hellvox.KappetijnMathijspset3;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -114,41 +115,67 @@ public class Main4Activity extends AppCompatActivity {
                 return true;
             }
         });
+        list.setOnItemLongClickListener(new GoButtonLongClickListener());
+        button.setOnClickListener(new GoButtonClickListener());
+    }
 
-        button.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                if (foodList.size() > 0) {
-                    SharedPreferences.Editor editor = prefs.edit();
-                    String url = "https://resto.mprog.nl/order";
-                    JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            int time = response.optInt("preparation_time");
-                            last.setVisibility(View.VISIBLE);
-                            last.setText("Your order is coming in: " + time + " Minutes!");
-                        }
-                    }, new Response.ErrorListener() {
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            errorToast.show();
-                        }
-                    });
-                    // Access the RequestQueue through your singleton class.
-                    MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsObjRequest);
-                    for (int i = 0; i < allDishes.size(); i++) {
-                        String temp = allDishes.get(i);
-                        editor.putString(temp, null);
+    private class GoButtonLongClickListener implements AdapterView.OnItemLongClickListener {
+        @Override
+        public boolean onItemLongClick(AdapterView<?> parent, View view, int position,
+                                       long id) {
+            SharedPreferences prefs = getApplicationContext().getSharedPreferences("orders", MODE_PRIVATE);
+            Food chosen_entry= (Food) parent.getAdapter().getItem(position);
+            String name = chosen_entry.getName();
+            int price = chosen_entry.getPrice();
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString(name, null);
+            editor.apply();
+            foodList.remove(chosen_entry);
+            totalCosts -= price;
+            TextView total = findViewById(R.id.total);
+            total.setText("Total costs: € " + totalCosts);
+            saveToSharedPrefs();
+            adapter.notifyDataSetChanged();
+            Toast.makeText(getApplicationContext(),name + " removed!", Toast.LENGTH_SHORT).show();
+            return true;
+        }
+    }
+
+    private class GoButtonClickListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            if (foodList.size() > 0) {
+                SharedPreferences prefs = getApplicationContext().getSharedPreferences("orders", MODE_PRIVATE);
+                SharedPreferences.Editor editor = prefs.edit();
+                String url = "https://resto.mprog.nl/order";
+                JsonObjectRequest jsObjRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        int time = response.optInt("preparation_time");
+                        last.setVisibility(View.VISIBLE);
+                        last.setText("Your order is coming in: " + time + " Minutes!");
                     }
-                    editor.apply();
-                    total.setVisibility(View.INVISIBLE);
-                    Toast.makeText(getApplicationContext(), "Your order has been placed!", Toast.LENGTH_LONG).show();
-                    foodList.clear();
-                    saveToSharedPrefs();
-                    adapter.notifyDataSetChanged();
-                    button.setVisibility(View.INVISIBLE);
-                } else {Toast.makeText(getApplicationContext(), "You have an empty cart!", Toast.LENGTH_SHORT).show();}
-            }
-        });
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        errorToast.show();
+                    }
+                });
+                // Access the RequestQueue through your singleton class.
+                MySingleton.getInstance(getApplicationContext()).addToRequestQueue(jsObjRequest);
+                for (int i = 0; i < allDishes.size(); i++) {
+                    String temp = allDishes.get(i);
+                    editor.putString(temp, null);
+                }
+                editor.apply();
+                total.setVisibility(View.INVISIBLE);
+                Toast.makeText(getApplicationContext(), "Your order has been placed!", Toast.LENGTH_LONG).show();
+                foodList.clear();
+                saveToSharedPrefs();
+                adapter.notifyDataSetChanged();
+                button.setVisibility(View.INVISIBLE);
+            } else {Toast.makeText(getApplicationContext(), "You have an empty cart!", Toast.LENGTH_SHORT).show();}
+        }
     }
 
 
